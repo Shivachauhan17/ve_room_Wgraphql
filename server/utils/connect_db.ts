@@ -1,19 +1,7 @@
 import mongoose, { mongo } from 'mongoose'
 import { DB_STRING } from '../config/config'
 import path from 'path'
-
-class CustomError extends Error {
-    fileName: string;
-    lineNumber:number;
-
-    constructor(message:string, fileName:string,lineNumber:number) {
-        super(message);
-        this.fileName = fileName;
-        this.lineNumber=lineNumber;
-        Object.setPrototypeOf(this, CustomError.prototype);
-
-    }
-}
+import { CustomError } from './customError'
 
 
 const connectMongo=()=>{
