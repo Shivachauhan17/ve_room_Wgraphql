@@ -25,7 +25,12 @@ interface ILoginArgs{
 
 }
 
-const typeDefs=`
+export const typeDefs=`
+
+    type Query{
+        hello:String!
+    }
+
     type User{
         id:ID!
         username:String!
@@ -40,9 +45,9 @@ const typeDefs=`
 
 `
 
-const resolvers={
+export const resolvers={
     Mutation:{
-        createUser:async(root,args:ICreateUserArgs)=>{
+        createUser:async(root:any,args:ICreateUserArgs)=>{
             const {username,email,password,confirmPassword}=args
             if(password===confirmPassword){
                 throw new GraphQLError('Password confirmation failed', null, null, null, null, null, {
@@ -66,7 +71,7 @@ const resolvers={
 
             return user.save()
         },
-        login:async (root,args:ILoginArgs)=>{
+        login:async (root:any,args:ILoginArgs)=>{
             const {username,password}=args
             const findUser=await User.findOne({username:username})
             if(!findUser){
@@ -85,6 +90,7 @@ const resolvers={
                     username: findUser.username,
                     id: findUser._id,
                 } 
+                if(process.env.JWT_SECRET!==undefined)
                 return  jwt.sign(userForToken, process.env.JWT_SECRET) 
             }
 
@@ -92,3 +98,12 @@ const resolvers={
 
     }
 }
+
+export const server = new ApolloServer({
+    typeDefs,
+    resolvers,
+  })
+
+startStandaloneServer(server,{
+    listen:{port:8000}
+}).then(({url})=>console.log(`server is running at ${url}`))
